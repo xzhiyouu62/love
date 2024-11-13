@@ -5,34 +5,84 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>喜歡江慶珩的第 1198 天</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            background-color: #f0f8ff;
-            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #f6d3e3 0%, #e6f0ff 100%);
+            font-family: "Microsoft JhengHei", Arial, sans-serif;
             color: #333;
             overflow: hidden;
         }
-        
+
+        .container {
+            position: relative;
+            text-align: center;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(5px);
+            animation: fadeIn 1s ease-out;
+        }
+
         h1 {
             font-size: 2.5em;
-            color: #4b8dc5;
-            text-align: center;
+            color: #ff69b4;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1rem;
+            line-height: 1.4;
         }
 
         #daysCount {
-            color: #ff6347;
+            color: #ff4081;
             font-weight: bold;
+            font-size: 1.2em;
+            padding: 0 0.3em;
         }
 
         .heart {
             position: absolute;
             color: #ff69b4;
             font-size: 1.5em;
-            animation: float 1s ease-out forwards;
+            animation: float 1.5s ease-out forwards;
+            z-index: 100;
+        }
+
+        .background-hearts {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .background-heart {
+            position: absolute;
+            color: rgba(255, 182, 193, 0.2);
+            font-size: 2em;
+            animation: backgroundFloat 20s linear infinite;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         @keyframes float {
@@ -40,14 +90,43 @@
                 opacity: 1;
                 transform: translateY(0) scale(1);
             }
+            50% {
+                opacity: 0.8;
+            }
             100% {
                 opacity: 0;
-                transform: translateY(-80px) scale(1.5);
+                transform: translateY(-100px) scale(1.5) rotate(45deg);
             }
+        }
+
+        @keyframes backgroundFloat {
+            0% {
+                transform: translateY(100vh) translateX(-50%);
+            }
+            100% {
+                transform: translateY(-100px) translateX(50%);
+            }
+        }
+
+        .date {
+            margin-top: 1rem;
+            font-size: 1.2em;
+            color: #666;
+            font-weight: 300;
+        }
+
+        .love-message {
+            margin-top: 1.5rem;
+            font-size: 1.1em;
+            color: #ff69b4;
+            opacity: 0;
+            animation: fadeIn 1s ease-out forwards;
+            animation-delay: 0.5s;
         }
     </style>
     <script>
-        const startDate = new Date('2021-08-02');
+        const startDate = new Date('2021-08-03');
+        
         function updateDays() {
             const today = new Date();
             const diffTime = today - startDate;
@@ -63,17 +142,56 @@
             heart.style.left = `${e.clientX}px`;
             heart.style.top = `${e.clientY}px`;
             document.body.appendChild(heart);
-
             heart.addEventListener("animationend", () => {
                 heart.remove();
             });
         }
 
-        window.onload = updateDays;
+        function createBackgroundHearts() {
+            const container = document.querySelector('.background-hearts');
+            const heartCount = 20;
+            for (let i = 0; i < heartCount; i++) {
+                const heart = document.createElement('div');
+                heart.classList.add('background-heart');
+                heart.innerHTML = '❤';
+                heart.style.left = `${Math.random() * 100}%`;
+                heart.style.animationDuration = `${15 + Math.random() * 10}s`;
+                heart.style.animationDelay = `${Math.random() * 5}s`;
+                container.appendChild(heart);
+            }
+        }
+
+        function refreshAt(hours, minutes, seconds) {
+            const now = new Date();
+            const then = new Date();
+            if (now.getHours() > hours ||
+                (now.getHours() === hours && now.getMinutes() > minutes) ||
+                (now.getHours() === hours && now.getMinutes() === minutes && now.getSeconds() >= seconds)) {
+                then.setDate(now.getDate() + 1);
+            }
+            then.setHours(hours);
+            then.setMinutes(minutes);
+            then.setSeconds(seconds);
+            const timeout = (then.getTime() - now.getTime());
+            setTimeout(() => {
+                window.location.reload(true);
+            }, timeout);
+        }
+
+        window.onload = () => {
+            updateDays();
+            refreshAt(0, 0, 0);
+            createBackgroundHearts();
+        };
+
         window.addEventListener("click", createHeart);
     </script>
 </head>
 <body>
-    <h1>游婷安喜歡江慶珩的第 <span id="daysCount">1198</span> 天</h1>
+    <div class="background-hearts"></div>
+    <div class="container">
+        <h1>游婷安喜歡江慶珩的第 <span id="daysCount">n</span> 天</h1>
+        <div class="date">始於 2021年8月3日</div>
+    </div>
 </body>
 </html>
